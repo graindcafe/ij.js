@@ -13,27 +13,43 @@ enioka.ij = (
          */
         var DSVDataProvider = {
             initialize : function(url, separator, rowsHeadersDepth, columnsHeadersDepth) {
-                var xmlhttp = new XMLHttpRequest(),
-                    dsvDataProvider = this;
 
                 //default behavior
                 this.rowDepth = rowsHeadersDepth || 1;
                 this.columnDepth = columnsHeadersDepth || 1;
+                this._requestFile(url, separator);
+            },
+            _requestFile : function(url, separator){
 
-                xmlhttp.onreadystatechange = function() {
-                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var xmlHttpRequest = new XMLHttpRequest(),
+                    dsvDataProvider = this;
+                xmlHttpRequest.onreadystatechange = function(event) {
+                    dsvDataProvider._receiveFile(event, this, separator);
+                }; 
+                xmlHttpRequest.open("GET", url, false);
+                xmlHttpRequest.send();
+            },
+            /**
+             * @function
+             * @description _receiveFile readyState event handler that receive the file requested earlier
+             * @return 
+             * readyStates:
+             *      UNSENT = 0: request not initialized
+             *      OPENED = 1: server connection established
+             *      HEADERS_RECEIVED = 2: request received
+             *      LOADING = 3: processing request
+             *      DONE = 4: request finished and response is ready
+             */
+            _receiveFile : function(event, xmlHttpRequest, separator){
+                if (xmlHttpRequest.readyState == XMLHttpRequest.DONE && xmlHttpRequest.status == 200) {
                         console.log("DSV file received");
-                        var fileLines = dsvDataProvider._parseDSV(xmlhttp.responseText, separator);
+                        var fileLines = this._parseDSV(xmlHttpRequest.responseText, separator);
                         console.log("data parsed");
-                        dsvDataProvider.matrix = dsvDataProvider._chewData(fileLines);
+                        this.matrix = this._chewData(fileLines);
                         console.log("data chewed");
-                    }
                 }
 
-                xmlhttp.open("GET", url, false);
-                xmlhttp.send();
             },
-
             /**
              * @function
              * @description getData will retrieve a sparse matrix given by dataCallBack function
@@ -83,7 +99,7 @@ enioka.ij = (
                 }
                 return lines;
             },
-
+        
             _chewData : function(lines) {
                 this.rows = new Array;
                 this.columns = new Array();
