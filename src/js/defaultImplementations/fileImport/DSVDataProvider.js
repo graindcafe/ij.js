@@ -11,7 +11,7 @@ enioka.ij = (
          * <br/>
          * <br/>
          */
-        var DSVataProvider = {
+        var DSVDataProvider = {
             initialize : function(url, separator, rowsHeadersDepth, columnsHeadersDepth) {
                 var xmlhttp = new XMLHttpRequest(),
                     dsvDataProvider = this;
@@ -112,9 +112,9 @@ enioka.ij = (
                 return matrix;
             }
         };
-        DSVataProvider = Class.extend(enioka.ij.IIJDataProvider, DSVataProvider);
+        DSVDataProvider = Class.extend(enioka.ij.IIJDataProvider, DSVDataProvider);
 
-        eniokaij.DSVataProvider = DSVataProvider;
+        eniokaij.DSVDataProvider = DSVDataProvider;
 
         // That's all folks
         return eniokaij;

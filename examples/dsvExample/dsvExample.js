@@ -14,7 +14,7 @@ Component = Class.create(Component);
 var DataProvider = {
 };
 
-DataProvider = Class.extend(enioka.ij.DSVataProvider, DataProvider);
+DataProvider = Class.extend(enioka.ij.DSVDataProvider, DataProvider);
 
 
 //
