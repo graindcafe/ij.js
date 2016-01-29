@@ -17,6 +17,8 @@ enioka.ij = (
                 //default behavior
                 this.rowDepth = rowsHeadersDepth || 1;
                 this.columnDepth = columnsHeadersDepth || 1;
+                this.onReceptionSuccess = undefined;
+                this.onReceptionFailure = undefined;
                 this._requestFile(url, separator);
             },
             _requestFile : function(url, separator){
@@ -25,14 +27,14 @@ enioka.ij = (
                     dsvDataProvider = this;
                 xmlHttpRequest.onreadystatechange = function(event) {
                     dsvDataProvider._receiveFile(event, this, separator);
-                }; 
-                xmlHttpRequest.open("GET", url, false);
+                };
+                xmlHttpRequest.open("GET", url, true);
                 xmlHttpRequest.send();
             },
             /**
              * @function
              * @description _receiveFile readyState event handler that receive the file requested earlier
-             * @return 
+             * @return
              * readyStates:
              *      UNSENT = 0: request not initialized
              *      OPENED = 1: server connection established
@@ -41,14 +43,20 @@ enioka.ij = (
              *      DONE = 4: request finished and response is ready
              */
             _receiveFile : function(event, xmlHttpRequest, separator){
-                if (xmlHttpRequest.readyState == XMLHttpRequest.DONE && xmlHttpRequest.status == 200) {
+                if (xmlHttpRequest.readyState == XMLHttpRequest.DONE){
+                    if (xmlHttpRequest.status == 200) {
                         console.log("DSV file received");
                         var fileLines = this._parseDSV(xmlHttpRequest.responseText, separator);
                         console.log("data parsed");
                         this.matrix = this._chewData(fileLines);
                         console.log("data chewed");
+                        if (this.onReceptionSuccess){
+                            this.onReceptionSuccess.apply(event, [xmlHttpRequest, this]);
+                        }
+                    } else if (this.onReceptionFailure){
+                        this.onReceptionFailure.apply(event, [xmlHttpRequest, this]);
+                    }
                 }
-
             },
             /**
              * @function
@@ -99,7 +107,7 @@ enioka.ij = (
                 }
                 return lines;
             },
-        
+
             _chewData : function(lines) {
                 this.rows = new Array;
                 this.columns = new Array();

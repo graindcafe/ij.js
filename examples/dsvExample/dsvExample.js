@@ -510,4 +510,7 @@ component.renderer.template.addIdPrefix("rowHeader",
                                         "r");
 
 ij.setWorkspace(document.getElementById("matrix"));
-ij.display();
+// Wait complete reception before trying to access data
+component.dataprovider.onReceptionSuccess = function() {
+    ij.display();
+};
